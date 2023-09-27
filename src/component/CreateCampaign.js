@@ -11,6 +11,7 @@ const CreateCampaign = () => {
     function openModal() {
         setIsOpen(true);
     }
+    
     return (
         <Fragment>
             <button
