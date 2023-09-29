@@ -54,9 +54,30 @@ const useAllCampaigns = () => {
         fetchAllCampaigns();
 
         // Listen for event
-        const handleProposeCampaignEvent = (id, title, amount, duration) => {
-            console.log({ id, title, amount, duration });
+        const handleProposeCampaignEvent = async (id, title, amount, duration) => {
+            try {
+                const contract = await getCrowdfundContractWithProvider(provider);
+                const campaignDetails = await contract.crowd(id);
+        
+                // Create a new campaign object
+                const newCampaign = {
+                    id: id,
+                    title: title,
+                    fundingGoal: amount,
+                    owner: campaignDetails.owner,
+                    durationTime: Number(duration),
+                    isActive: campaignDetails.isActive,
+                    fundingBalance: campaignDetails.fundingBalance,
+                    contributors: [], // Initialize contributors as an empty array
+                };
+        
+                // Add the new campaign to the existing campaigns
+                setCampaigns((prevCampaigns) => [...prevCampaigns, newCampaign]);
+            } catch (error) {
+                console.error("Error handling ProposeCampaign event:", error);
+            }
         };
+        
         const contract = getCrowdfundContractWithProvider(provider);
         contract.on("ProposeCampaign", handleProposeCampaignEvent);
 
