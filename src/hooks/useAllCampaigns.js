@@ -22,11 +22,14 @@ const useAllCampaigns = () => {
                 const campaignPromises = campaignsKeys.map((id) =>
                     contract.crowd(id)
                 );
-
+        
                 const campaignResults = await Promise.all(campaignPromises);
-
-                const campaignDetails = campaignResults.map(
-                    (details, index) => ({
+        
+                const campaignDetailsPromises = campaignResults.map(async (details, index) => {
+                    // Get contributors for each campaign
+                    const contributors = await contract.getContributors(index + 1);
+                    
+                    return {
                         id: campaignsKeys[index],
                         title: details.title,
                         fundingGoal: details.fundingGoal,
@@ -34,15 +37,19 @@ const useAllCampaigns = () => {
                         durationTime: Number(details.durationTime),
                         isActive: details.isActive,
                         fundingBalance: details.fundingBalance,
-                        contributors: details.contributors,
-                    })
-                );
-
+                        contributors: contributors, // Include contributors here
+                    };
+                });
+        
+                // Wait for all campaign details promises to resolve
+                const campaignDetails = await Promise.all(campaignDetailsPromises);
+        
                 setCampaigns(campaignDetails);
             } catch (error) {
                 console.error("Error fetching campaigns:", error);
             }
         };
+        
 
         fetchAllCampaigns();
 
