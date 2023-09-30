@@ -28,7 +28,6 @@ export const networkInfoMap = {
 export const defaultReadonlyChainId = 11155111;
 
 export const rpcUrlsMap = {
-    11155111:
-        "https://eth-sepolia.g.alchemy.com/v2/u52zbAM-Lq4Y3PA2XPhaXyK8nGKXqafS",
+    11155111: "https://endpoints.omniatech.io/v1/eth/sepolia/public",
     84531: "https://base-goerli.g.alchemy.com/v2/Nm1nL2ueUsq1thAC6Aznm6RnyglPUwKR",
 };

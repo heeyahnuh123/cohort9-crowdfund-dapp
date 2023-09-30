@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useCampaign from "../hooks/useCampaign";
 import { formatEther, parseEther } from "ethers";
-import { formatDate } from "../utils";
+import { formatDate, shortenAccount } from "../utils";
 import useContribute from "../hooks/useContribute";
 import { useConnection } from "../context/connection";
+import { toast } from "react-toastify";
 
 const Campaign = () => {
     const [amountInput, setAmountInput] = useState(0);
@@ -19,22 +20,22 @@ const Campaign = () => {
 
     const handleContribute = async () => {
         if (!isActive || !provider) return;
-        if (amountInput <= 0) return alert("Enter a non-zero amount!");
+        if (amountInput <= 0) return toast.info("Enter a non-zero amount!");
 
         try {
             setSendingTx(true);
             const tx = await contribute(id, parseEther(String(amountInput)));
             const receipt = await tx.wait();
 
-            if (receipt.status === 0) return alert("tx failed");
+            if (receipt.status === 0) return toast.error("tx failed");
 
-            alert("Thanks for contibuting!!");
+            toast.success("Thanks for contibuting!!");
         } catch (error) {
             console.log("error: ", error);
             if (error.info.error.code === 4001) {
-                return alert("You rejected the request");
+                return toast.error("You rejected the request");
             }
-            alert("something went wrong");
+            toast.error("something went wrong");
         } finally {
             setSendingTx(false);
         }
@@ -115,6 +116,22 @@ const Campaign = () => {
                                 Funding Goal -{" "}
                                 {formatEther(campaign?.fundingGoal)} ETH
                             </p>
+                            {campaign?.contributors.length > 0 && (
+                                <div className="font-bold text-gray-500 mt-3">
+                                    <span className="font-bold">
+                                        Contributors
+                                    </span>
+                                    {campaign?.contributors?.map(
+                                        (contributor, index) => (
+                                            <p key={index} className="mt-2">
+                                                {shortenAccount(
+                                                    String(contributor)
+                                                )}
+                                            </p>
+                                        )
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { getReadOnlyProvider, isSupportedChain } from "../utils";
 import { defaultReadonlyChainId, networkInfoMap } from "../constants";
 import { ethers } from "ethers";
+import { toast } from "react-toastify";
 
 const Connection = createContext();
 
@@ -15,7 +16,7 @@ const ConnectionProvider = ({ children }) => {
 
     const connect = async () => {
         if (window.ethereum === undefined)
-            return alert("not an ethereum-enabled browser");
+            return toast.info("not an ethereum-enabled browser");
         try {
             return window.ethereum.request({
                 method: "eth_requestAccounts",
@@ -89,7 +90,7 @@ const ConnectionProvider = ({ children }) => {
 
     const switchToChain = async (chain) => {
         if (!isSupportedChain(chain))
-            return alert("attempt to switch to a wrong chain!");
+            return toast.error("attempt to switch to a wrong chain!");
         try {
             await window.ethereum.request({
                 method: "wallet_switchEthereumChain",
@@ -104,7 +105,7 @@ const ConnectionProvider = ({ children }) => {
                         params: [chainInfo],
                     });
                 } catch (addError) {
-                    alert("you rejected network addition!");
+                    toast.error("you rejected network addition!");
                 }
             }
         }

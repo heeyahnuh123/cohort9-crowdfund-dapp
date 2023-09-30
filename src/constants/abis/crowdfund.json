@@ -30,6 +30,12 @@
         "inputs": [
             {
                 "indexed": false,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
                 "internalType": "string",
                 "name": "_title",
                 "type": "string"
